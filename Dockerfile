@@ -1,4 +1,4 @@
-```dockerfile
+
 # Use the official Python 3.9 base image
 FROM python:3.9-slim
 
@@ -19,4 +19,3 @@ EXPOSE 8501
 
 # Set the Streamlit application as the entry point
 CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-```
