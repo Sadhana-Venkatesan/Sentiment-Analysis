@@ -1,60 +1,29 @@
-
+```groovy
 pipeline {
     agent {
         docker {
-            image 'python:3.9'
+            image 'r-base:latest' // R language environment
         }
     }
     environment {
-        APP_NAME = 'app.py'
-        REQUIREMENTS_FILE = 'requirements.txt'
+        FLASK_APP = 'app.py' // Update this to match your main Flask application file
     }
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checking out source code...'
-                checkout scm
-            }
-        }
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies...'
                 sh '''
-                python -m pip install --upgrade pip
-                pip install -r ${REQUIREMENTS_FILE}
+                apt-get update && apt-get install -y python3-pip
+                python3 -m pip install --no-cache-dir -r Requirements.txt
                 '''
             }
         }
-        stage('Lint') {
+        stage('Run Flask Application') {
             steps {
-                echo 'Running linter...'
-                sh 'pip install flake8'
-                sh 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics'
+                sh '''
+                python3 $FLASK_APP
+                '''
             }
-        }
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                sh 'pip install pytest'
-                sh 'pytest'
-            }
-        }
-        stage('Run Application') {
-            steps {
-                echo 'Running the Streamlit application...'
-                sh "streamlit run ${APP_NAME} --server.port=8501 --server.headless=true"
-            }
-        }
-    }
-    post {
-        always {
-            echo 'Pipeline execution finished.'
-        }
-        success {
-            echo 'Pipeline executed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
         }
     }
 }
+```
